@@ -1,5 +1,5 @@
 // api.js - Handles all API calls to The Dog API
-const API_KEY = 'live_RnkhjTYAAxEOyE3Zo61n4bKiFNeiixpn19qJwrf2BO9mYTfKGGLl5ZnNJwSyeSA2'; // Your Dog API key
+const API_KEY = 'live_RnkhjTYAAxEOyE3Zo61n4bKiFNeiixpn19qJwrf2BO9mYTfKGGLl5ZnNJwSyeSA2'; 
 const BASE_URL = 'https://api.thedogapi.com/v1';
 
 // Helper function to handle API responses
