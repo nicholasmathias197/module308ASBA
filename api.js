@@ -1,8 +1,7 @@
-// api.js - Handles all API calls to The Dog API
+// api.js
 const API_KEY = 'live_RnkhjTYAAxEOyE3Zo61n4bKiFNeiixpn19qJwrf2BO9mYTfKGGLl5ZnNJwSyeSA2';
 const BASE_URL = 'https://api.thedogapi.com/v1';
 
-// Helper function to handle API responses
 async function handleResponse(response) {
     if (!response.ok) {
         const error = await response.text();
@@ -11,7 +10,6 @@ async function handleResponse(response) {
     return response.json();
 }
 
-// Helper function to create headers with API key
 function getHeaders() {
     return {
         'x-api-key': API_KEY,
@@ -19,7 +17,6 @@ function getHeaders() {
     };
 }
 
-// GET: Fetch random dog images
 export async function fetchRandomDogs(limit = 12) {
     try {
         const response = await fetch(`${BASE_URL}/images/search?limit=${limit}&has_breeds=true`, {
@@ -32,21 +29,18 @@ export async function fetchRandomDogs(limit = 12) {
     }
 }
 
-// GET: Fetch dogs by breed - FIXED to ensure breed data
 export async function fetchDogsByBreed(breedId, limit = 12) {
     try {
         console.log('Fetching dogs for breed ID:', breedId);
         
-        // First, get the complete breed details
         const breedResponse = await fetch(`${BASE_URL}/breeds/${breedId}`, {
             headers: getHeaders()
         });
         const breedData = await handleResponse(breedResponse);
         console.log('Breed data retrieved:', breedData.name);
         
-        // Then fetch images for this breed
         const response = await fetch(
-            `${BASE_URL}/images/search?breed_ids=${breedId}&limit=${limit}&has_breeds=true`, 
+            `${BASE_URL}/images/search?breed_ids=${breedId}&limit=${limit}&has_breeds=true&include_breed=1`, 
             {
                 headers: getHeaders()
             }
@@ -54,7 +48,6 @@ export async function fetchDogsByBreed(breedId, limit = 12) {
         let images = await handleResponse(response);
         console.log(`Found ${images.length} images for breed ${breedData.name}`);
         
-        // Create a complete breed info object
         const breedInfo = {
             id: breedData.id,
             name: breedData.name,
@@ -68,12 +61,14 @@ export async function fetchDogsByBreed(breedId, limit = 12) {
             country_code: breedData.country_code || 'Unknown'
         };
         
-        // Ensure every image has breed information
         images = images.map(image => {
-            return {
-                ...image,
-                breeds: [breedInfo] // Attach the complete breed info to every image
-            };
+            if (!image.breeds || image.breeds.length === 0) {
+                return {
+                    ...image,
+                    breeds: [breedInfo]
+                };
+            }
+            return image;
         });
         
         return images;
@@ -83,7 +78,6 @@ export async function fetchDogsByBreed(breedId, limit = 12) {
     }
 }
 
-// GET: Fetch ALL breeds and sort alphabetically
 export async function fetchAllBreeds() {
     try {
         console.log('Fetching all breeds...');
@@ -92,7 +86,6 @@ export async function fetchAllBreeds() {
         });
         const breeds = await handleResponse(response);
         
-        // Sort breeds alphabetically by name
         const sortedBreeds = breeds.sort((a, b) => a.name.localeCompare(b.name));
         console.log(`Fetched ${sortedBreeds.length} breeds, sorted alphabetically`);
         
@@ -103,31 +96,32 @@ export async function fetchAllBreeds() {
     }
 }
 
-// GET: Search breeds by name (for the search functionality)
 export async function searchBreeds(query) {
     try {
         console.log('Searching breeds for:', query);
         
         if (!query.trim()) {
-            // If query is empty, return all breeds
             return await fetchAllBreeds();
         }
         
-        const response = await fetch(`${BASE_URL}/breeds/search?q=${encodeURIComponent(query)}`, {
-            headers: getHeaders()
-        });
-        const results = await handleResponse(response);
-        console.log(`Found ${results.length} breeds matching "${query}"`);
+        // Fetch all breeds and filter locally since /breeds/search doesn't work well
+        const allBreeds = await fetchAllBreeds();
         
-        // Sort results alphabetically
-        return results.sort((a, b) => a.name.localeCompare(b.name));
+        const searchQuery = query.trim().toLowerCase();
+        const filtered = allBreeds.filter(breed => 
+            breed.name.toLowerCase().includes(searchQuery) ||
+            (breed.temperament && breed.temperament.toLowerCase().includes(searchQuery)) ||
+            (breed.breed_group && breed.breed_group.toLowerCase().includes(searchQuery))
+        );
+        
+        console.log(`Found ${filtered.length} breeds matching "${query}"`);
+        return filtered.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.error('Error searching breeds:', error);
         throw error;
     }
 }
 
-// GET: Fetch user's favorites
 export async function fetchFavorites() {
     try {
         const response = await fetch(`${BASE_URL}/favourites`, {
@@ -140,7 +134,6 @@ export async function fetchFavorites() {
     }
 }
 
-// POST: Add image to favorites
 export async function addToFavorites(imageId) {
     try {
         const response = await fetch(`${BASE_URL}/favourites`, {
@@ -158,7 +151,6 @@ export async function addToFavorites(imageId) {
     }
 }
 
-// DELETE: Remove from favorites
 export async function removeFromFavorites(favoriteId) {
     try {
         const response = await fetch(`${BASE_URL}/favourites/${favoriteId}`, {
@@ -172,7 +164,6 @@ export async function removeFromFavorites(favoriteId) {
     }
 }
 
-// POST: Vote on an image
 export async function voteOnImage(imageId, value) {
     try {
         const response = await fetch(`${BASE_URL}/votes`, {
@@ -191,14 +182,12 @@ export async function voteOnImage(imageId, value) {
     }
 }
 
-// POST: Upload an image
 export async function uploadImage(formData) {
     try {
         const response = await fetch(`${BASE_URL}/images/upload`, {
             method: 'POST',
             headers: {
                 'x-api-key': API_KEY
-                // Don't set Content-Type for FormData
             },
             body: formData
         });
