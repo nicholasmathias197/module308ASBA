@@ -768,5 +768,3 @@ export function getCurrentBreedId() {
 export function setCurrentBreedId(breedId) {
     currentBreedId = breedId;
 }
-
-export { handleVoteOnCard, handleFavorite };
