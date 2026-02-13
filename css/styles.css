@@ -1,29 +1,90 @@
-/* Custom styles for Dog Breed Explorer */
+/* Custom styles for Dog Breed Explorer - Dark Cyberpunk Theme */
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --primary-glow: #00d9ff;
+    --primary-blue: #0066cc;
+    --dark-bg: #000000;
+    --darker-bg: #0a1a2e;
+    --card-bg: #16213e;
+    --text-primary: #e0e1dd;
+    --text-light: #ffffff;
+    --text-muted: #a0a0a0;
+    --text-glow: #00d9ff;
+    --gradient-primary: linear-gradient(135deg, #000000 0%, #0a1a2e 50%, #16213e 100%);
+    --gradient-glow: linear-gradient(90deg, #0066cc 0%, #00d9ff 50%, #0066cc 100%);
+    --gradient-button: linear-gradient(135deg, #0066cc, #0099ff);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #000000 0%, #0a1a2e 50%, #16213e 100%);
+    color: var(--text-primary);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 /* Navigation */
 .navbar {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.9) !important;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(to right, #0066cc, #00d9ff) 1;
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+    margin-bottom: 30px;
 }
 
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
+    color: var(--primary-glow) !important;
+    text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+}
+
+.nav-link {
+    color: var(--text-primary) !important;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-glow) !important;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
 .nav-link.active {
-    font-weight: 600;
-    background-color: rgba(255,255,255,0.2);
+    color: var(--primary-glow) !important;
+    background-color: rgba(0, 102, 204, 0.3);
     border-radius: 5px;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+/* Main Container */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 217, 255, 0.3), 0 15px 35px rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(0, 217, 255, 0.4);
+    position: relative;
+    padding: 20px;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--gradient-glow);
+    z-index: 10;
 }
 
 /* Cards */
@@ -31,22 +92,38 @@ body {
     height: 100%;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: none;
+    border: 2px solid rgba(0, 217, 255, 0.3);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    background: var(--card-bg);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.breed-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(0, 153, 255, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .breed-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.4), 0 15px 30px rgba(0, 0, 0, 0.6);
 }
 
 .breed-image-container {
     height: 220px;
     overflow: hidden;
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #0066cc 0%, #00d9ff 100%);
     position: relative;
+    border-bottom: 2px solid rgba(0, 217, 255, 0.5);
 }
 
 .breed-image {
@@ -66,9 +143,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #0066cc, #00d9ff);
     color: white;
     font-size: 4rem;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
 }
 
 /* Favorite Button */
@@ -76,7 +154,7 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: white;
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 50%;
     width: 45px;
     height: 45px;
@@ -86,29 +164,28 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 10;
-    border: 2px solid rgba(255,255,255,0.8);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border: 2px solid var(--primary-glow);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    backdrop-filter: blur(5px);
 }
 
 .favorite-btn:hover {
     transform: scale(1.15);
-    background: #fff5f5;
-    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.9);
+    border-color: #ff4444;
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.4);
 }
 
 .favorite-btn.active {
     background: #dc3545;
     color: white;
-    border-color: #dc3545;
-}
-
-.favorite-btn.active i {
-    color: white;
+    border-color: #ff4444;
+    box-shadow: 0 0 30px rgba(220, 53, 69, 0.5);
 }
 
 .favorite-btn i {
     font-size: 1.3rem;
-    color: #dc3545;
+    color: var(--primary-glow);
 }
 
 .favorite-btn.active i {
@@ -119,13 +196,14 @@ body {
 .favorite-card {
     border-left: 5px solid #dc3545;
     position: relative;
+    border-color: #ff4444;
 }
 
 .remove-favorite-btn {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: white;
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -133,22 +211,24 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px solid #dc3545;
-    color: #dc3545;
+    border: 2px solid #ff4444;
+    color: #ff4444;
     z-index: 10;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+    backdrop-filter: blur(5px);
 }
 
 .remove-favorite-btn:hover {
     background: #dc3545;
     color: white;
     transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(220, 53, 69, 0.5);
 }
 
 .favorite-date {
     font-size: 0.85rem;
-    color: #6c757d;
+    color: #88ffff;
     margin-top: 10px;
 }
 
@@ -159,40 +239,47 @@ body {
 
 .temperament-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0066cc, #0099ff);
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.75rem;
     margin: 2px;
     font-weight: 500;
-    box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+    border: 1px solid rgba(0, 217, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
 }
 
 /* Card Body */
 .card-body {
     padding: 1.25rem;
+    background: var(--card-bg);
 }
 
 .card-title {
     font-weight: 700;
     margin-bottom: 10px;
-    color: #333;
+    color: var(--primary-glow);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
 }
 
 .breed-stats {
     font-size: 0.9rem;
-    color: #666;
+    color: #aaccff;
 }
 
 .breed-stats i {
     width: 20px;
-    color: #667eea;
+    color: var(--primary-glow);
 }
 
 /* Loading Spinner */
 #loading {
     padding: 40px 0;
+}
+
+.spinner-border {
+    color: var(--primary-glow) !important;
 }
 
 /* Toast Notifications */
@@ -204,25 +291,31 @@ body {
 }
 
 .toast {
-    background: white;
+    background: rgba(0, 0, 0, 0.9);
     border-radius: 10px;
     padding: 15px 25px;
     margin-bottom: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
     animation: slideInRight 0.3s ease;
     border-left: 4px solid;
+    border: 2px solid rgba(0, 217, 255, 0.4);
+    color: var(--text-primary);
+    backdrop-filter: blur(10px);
 }
 
 .toast.success {
     border-left-color: #28a745;
+    border-color: rgba(40, 167, 69, 0.4);
 }
 
 .toast.error {
     border-left-color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.4);
 }
 
 .toast.info {
-    border-left-color: #17a2b8;
+    border-left-color: var(--primary-glow);
+    border-color: rgba(0, 217, 255, 0.4);
 }
 
 @keyframes slideInRight {
@@ -244,12 +337,203 @@ body {
 
 .empty-state i {
     font-size: 5rem;
-    color: #dee2e6;
+    color: var(--primary-glow);
     margin-bottom: 20px;
+    text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 217, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0099ff, #00d9ff);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+    border-color: var(--primary-glow);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--primary-glow);
+    color: var(--primary-glow);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-glow);
+    color: #000;
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+}
+
+.btn-outline-danger {
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+}
+
+.btn-outline-danger:hover {
+    background: #ff4444;
+    color: white;
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
+}
+
+/* Filter Section */
+.card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(0, 217, 255, 0.3);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.card-title {
+    color: var(--primary-glow);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+}
+
+/* Form Controls - Lighter Text */
+.form-select, 
+.form-control,
+.input-group-text {
+    background: rgba(10, 20, 40, 0.8);
+    border: 2px solid rgba(0, 217, 255, 0.4);
+    color: #ffffff !important;  /* Pure white text */
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-weight: 400;
+    font-size: 1rem;
+    backdrop-filter: blur(5px);
+}
+
+/* Input placeholder text - lighter */
+.form-control::placeholder {
+    color: #b0b0b0 !important;  /* Light gray placeholder */
+    opacity: 0.8;
+    font-weight: 300;
+}
+
+/* Select dropdown text */
+.form-select {
+    color: #ffffff !important;
+}
+
+.form-select option {
+    background: #0a1a2e;
+    color: #ffffff;
+    padding: 10px;
+}
+
+/* Input group text */
+.input-group-text {
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    color: white !important;
+    border: 2px solid rgba(0, 217, 255, 0.6);
+    font-weight: 500;
+}
+
+/* Focus states */
+.form-select:focus, 
+.form-control:focus {
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+    background: rgba(20, 40, 60, 0.9);
+    color: #ffffff !important;
+}
+
+/* Search input specific */
+#search-input {
+    color: #ffffff !important;
+    font-size: 1.1rem;
+}
+
+#search-input::placeholder {
+    color: #c0c0c0 !important;
+    font-style: italic;
+}
+
+/* Disabled state */
+.form-select:disabled,
+.form-control:disabled {
+    background: rgba(30, 30, 30, 0.5);
+    color: #a0a0a0 !important;
+}
+
+/* Load More Button */
+#load-more-btn {
+    padding: 12px 40px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    border: 2px solid rgba(0, 217, 255, 0.6);
+    color: white;
+}
+
+#load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+    background: linear-gradient(135deg, #0099ff, #00d9ff);
+}
+
+/* Badge */
+.badge.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #ff4444) !important;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+    color: white;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid rgba(0, 217, 255, 0.4);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    color: white;
+    transform: translateX(5px);
+}
+
+/* Stats and Counters */
+#breed-count, 
+#favorites-count,
+#favorites-total {
+    color: var(--primary-glow);
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+}
+
+/* Text colors */
+.text-muted {
+    color: #b0b0b0 !important;
+}
+
+.text-primary {
+    color: var(--primary-glow) !important;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     .breed-image-container {
         height: 180px;
     }
@@ -266,15 +550,22 @@ body {
     .favorite-btn i {
         font-size: 1rem;
     }
+    
+    .form-select, 
+    .form-control {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
 }
 
-/* Animation */
+/* Animations */
 @keyframes pulse {
     0% {
         transform: scale(1);
     }
     50% {
         transform: scale(1.2);
+        box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
     }
     100% {
         transform: scale(1);
@@ -285,33 +576,49 @@ body {
     animation: pulse 0.4s ease;
 }
 
-/* Load More Button */
-#load-more-btn {
-    padding: 12px 40px;
-    border-radius: 30px;
-    font-weight: 600;
-    transition: all 0.3s;
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+    }
 }
 
-#load-more-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+.breed-card {
+    animation: glow 3s infinite;
 }
 
-/* Filter Section */
-.form-select, .form-control {
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
-    padding: 10px 15px;
+/* Links */
+a {
+    color: var(--primary-glow);
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.form-select:focus, .form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+a:hover {
+    color: #88ffff;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
 }
 
-/* Card Shadow */
-.card {
-    border-radius: 15px;
-    border: none;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    border-radius: 5px;
+    border: 1px solid rgba(0, 217, 255, 0.6);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #0099ff, #00d9ff);
 }
