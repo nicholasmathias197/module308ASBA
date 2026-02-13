@@ -1,23 +1,21 @@
 # Dog Gallery - SBA 308A JavaScript Web Application
 
-A single-page web application that allows users to browse, favorite, vote on, and upload dog images using The Dog API.
+A single-page web application that allows users to browse, favorite, and vote on dog images using The Dog API.
 
 ## Features
 
 - **Browse Random Dogs**: View a gallery of random dog images with breed information
-- **Search by Breed**: Find dogs by specific breeds with a searchable breed list
+- **Load More**: Paginated gallery with "Load More" functionality
 - **Favorites System**: Add/remove images to/from your personal favorites
 - **Voting System**: Vote up or down on dog images
-- **Image Upload**: Upload your own dog photos to share with the community
 - **Responsive Design**: Works on desktop and mobile devices
-- **Modal Views**: Click on any image to view it in full size with detailed information
 
 ## Technologies Used
 
 - **HTML5**: Semantic markup and structure
 - **CSS3**: Modern styling with Flexbox, Grid, and responsive design
 - **JavaScript (ES6+)**: Modular code with async/await and Promises
-- **The Dog API**: External API for dog images, breeds, favorites, and voting
+- **The Dog API**: External API for dog images, favorites, and voting
 - **Fetch API**: For making HTTP requests to the API
 
 ## Project Structure
@@ -36,12 +34,10 @@ A single-page web application that allows users to browse, favorite, vote on, an
 This application uses The Dog API (https://thedogapi.com/) with the following endpoints:
 
 - `GET /v1/images/search` - Fetch random dog images
-- `GET /v1/breeds` - Get list of all dog breeds
 - `GET /v1/favourites` - Get user's favorite images
 - `POST /v1/favourites` - Add image to favorites
 - `DELETE /v1/favourites/{id}` - Remove from favorites
 - `POST /v1/votes` - Vote on an image
-- `POST /v1/images/upload` - Upload new dog images
 
 ## Setup Instructions
 
