@@ -4,93 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dog Gallery - SBA 308A</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Dog Gallery</h1>
-        <p>Discover, favorite, and vote on adorable dogs!</p>
+    <header class="site-header">
+        <div class="container text-center">
+            <h1 class="display-4 mb-2">Dog Gallery</h1>
+            <p class="lead text-muted">Discover, favorite, and vote on adorable dogs!</p>
+        </div>
     </header>
 
-    <nav>
-        <button id="random-btn" class="nav-btn active">Random Dogs</button>
-        <button id="breeds-btn" class="nav-btn">Browse Breeds</button>
-        <button id="favorites-btn" class="nav-btn">My Favorites</button>
-        <button id="upload-btn" class="nav-btn">Upload Dog</button>
-    </nav>
+    <div class="main-container">
+      
+        <nav class="d-flex justify-content-center mb-4 flex-wrap">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <button id="random-btn" class="nav-link active">Random Dogs</button>
+                </li>
+                <li class="nav-item">
+                    <button id="breeds-btn" class="nav-link">Browse Breeds</button>
+                </li>
+                <li class="nav-item">
+                    <button id="favorites-btn" class="nav-link">My Favorites</button>
+                </li>
+                <li class="nav-item">
+                    <button id="upload-btn" class="nav-link">Upload Dog</button>
+                </li>
+            </ul>
+        </nav>
 
-    <main>
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>Loading...</p>
+      
+        <div id="loading" class="text-center py-5 hidden">
+            <div class="spinner-custom mx-auto mb-3"></div>
+            <p class="text-white">Loading...</p>
         </div>
 
-        <div id="error" class="error hidden">
-            <p id="error-message"></p>
-            <button id="retry-btn">Retry</button>
+        <div id="error" class="alert alert-danger text-center mx-auto hidden" style="max-width: 600px;">
+            <p id="error-message" class="mb-3"></p>
+            <button id="retry-btn" class="btn btn-outline-danger">Retry</button>
         </div>
 
-        <!-- Random Dogs Section -->
-        <section id="random-section" class="section">
-            <div class="controls">
-                <button id="load-more-btn" class="load-more-btn">Load More Dogs</button>
+        
+        <section id="random-section" class="section-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <button id="load-more-btn" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-arrow-repeat me-2"></i>Load More Dogs
+                </button>
+                <div class="d-flex gap-2">
+                    <button id="vote-up-btn" class="btn btn-vote">
+                        <i class="bi bi-hand-thumbs-up me-2"></i>Upvote
+                    </button>
+                    <button id="vote-down-btn" class="btn btn-vote">
+                        <i class="bi bi-hand-thumbs-down me-2"></i>Downvote
+                    </button>
+                </div>
             </div>
-            <div id="random-gallery" class="gallery"></div>
+            <div id="random-gallery" class="gallery-grid"></div>
         </section>
 
-        <!-- Breeds Section -->
-        <section id="breeds-section" class="section hidden">
-            <div class="search-controls">
-                <input type="text" id="breed-search" placeholder="Search breeds..." class="search-input">
-                <button id="search-breed-btn" class="search-btn">Search</button>
+      
+        <section id="breeds-section" class="section-card hidden">
+            <div class="row g-3 mb-4">
+                <div class="col-md-8">
+                    <input type="text" id="breed-search" class="form-control form-control-lg rounded-pill" 
+                           placeholder="Search breeds by name...">
+                </div>
+                <div class="col-md-4">
+                    <button id="search-breed-btn" class="btn btn-primary w-100 rounded-pill">
+                        <i class="bi bi-search me-2"></i>Search
+                    </button>
+                </div>
             </div>
-            <div id="breeds-list" class="breeds-list"></div>
-            <div id="breed-gallery" class="gallery hidden"></div>
+            <div id="breeds-list" class="breeds-grid"></div>
+            <div id="breed-gallery" class="gallery-grid hidden"></div>
         </section>
 
-        <!-- Favorites Section -->
-        <section id="favorites-section" class="section hidden">
-            <h2>Your Favorite Dogs</h2>
-            <div id="favorites-gallery" class="gallery"></div>
+        
+        <section id="favorites-section" class="section-card hidden">
+            <h2 class="h3 mb-4">Your Favorite Dogs</h2>
+            <div id="favorites-gallery" class="gallery-grid"></div>
         </section>
 
-        <!-- Upload Section -->
-        <section id="upload-section" class="section hidden">
-            <div class="upload-container">
-                <h2>Upload Your Dog Photo</h2>
-                <form id="upload-form" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="dog-image">Choose a dog image:</label>
-                        <input type="file" id="dog-image" name="file" accept="image/*" required>
+       
+        <section id="upload-section" class="section-card hidden">
+            <div class="upload-area">
+                <h2 class="h3 mb-4">Upload Your Dog Photo</h2>
+                <form id="upload-form" enctype="multipart/form-data" class="row g-4">
+                    <div class="col-12">
+                        <label for="dog-image" class="form-label fw-bold">Choose a dog image:</label>
+                        <input type="file" class="form-control" id="dog-image" name="file" accept="image/*" required>
                     </div>
-                    <div class="form-group">
-                        <label for="sub-id">Your Name/ID (optional):</label>
-                        <input type="text" id="sub-id" name="sub_id" placeholder="Enter your name">
+                    <div class="col-12">
+                        <label for="sub-id" class="form-label fw-bold">Your Name/ID (optional):</label>
+                        <input type="text" class="form-control" id="sub-id" name="sub_id" placeholder="Enter your name">
                     </div>
-                    <button type="submit" id="upload-submit-btn" class="upload-btn">Upload Dog</button>
+                    <div class="col-12">
+                        <div id="upload-preview" class="upload-preview"></div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" id="upload-submit-btn" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload Dog
+                        </button>
+                    </div>
                 </form>
-                <div id="upload-status" class="upload-status hidden"></div>
+                <div id="upload-status" class="upload-status mt-3 hidden"></div>
+            </div>
+
+            <div class="mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="h4 mb-0">My Uploads</h3>
+                    <button id="refresh-uploads-btn" class="btn btn-refresh">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                    </button>
+                </div>
+                <div id="upload-gallery" class="gallery-grid"></div>
             </div>
         </section>
 
-        <!-- Modal for full-size images -->
-        <div id="image-modal" class="modal hidden">
-            <div class="modal-content">
-                <span id="close-modal" class="close">&times;</span>
-                <img id="modal-image" src="" alt="Dog">
-                <div class="modal-info">
-                    <h3 id="modal-breed"></h3>
-                    <p id="modal-description"></p>
-                    <div class="modal-actions">
-                        <button id="modal-favorite-btn" class="favorite-btn">❤️ Favorite</button>
-                        <button id="modal-vote-up-btn" class="vote-btn">👍</button>
-                        <button id="modal-vote-down-btn" class="vote-btn">👎</button>
+ 
+        <div id="image-modal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content modal-custom">
+                    <div class="modal-header border-0">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modal-image" src="" alt="Dog" class="modal-image mb-4">
+                        <h3 id="modal-breed" class="h4 mb-3"></h3>
+                        <p id="modal-description" class="text-muted mb-4"></p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <button id="modal-favorite-btn" class="btn btn-favorite">
+                                <i class="bi bi-heart me-2"></i>Favorite
+                            </button>
+                            <button id="modal-vote-up-btn" class="btn btn-vote">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                            </button>
+                            <button id="modal-vote-down-btn" class="btn btn-vote">
+                                <i class="bi bi-hand-thumbs-down"></i>
+                            </button>
+                            <button id="modal-delete-btn" class="btn btn-delete hidden">
+                                <i class="bi bi-trash me-2"></i>Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
     <script type="module" src="app.js"></script>
 </body>
 </html>
