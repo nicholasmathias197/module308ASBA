@@ -1,5 +1,5 @@
 // ui.js - Handles DOM manipulation and UI updates
-import { addToFavorites, removeFromFavorites, voteOnImage } from './api.js';
+import { addToFavorites, removeFromFavorites, voteOnImage, uploadImage } from './api.js';
 
 // DOM elements
 const elements = {
@@ -28,6 +28,7 @@ const elements = {
 
     // Upload section
     uploadForm: document.getElementById('upload-form'),
+    uploadSubmitBtn: document.getElementById('upload-submit-btn'),
     uploadStatus: document.getElementById('upload-status'),
 
     // Modal
@@ -59,19 +60,23 @@ function setupEventListeners() {
     elements.navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const section = btn.id.replace('-btn', '');
-            showSection(section);
+            // Use the navigate function from app.js if available, otherwise use showSection
+            if (window.navigateToSection) {
+                window.navigateToSection(section);
+            } else {
+                showSection(section);
+            }
         });
     });
 
     // Random section
     elements.loadMoreBtn.addEventListener('click', () => {
-        // This will be handled by app.js
         const event = new CustomEvent('loadMoreDogs');
         document.dispatchEvent(event);
     });
 
-    elements.voteUpBtn.addEventListener('click', () => handleVote(1));
-    elements.voteDownBtn.addEventListener('click', () => handleVote(0));
+    elements.voteUpBtn.addEventListener('click', () => handleBulkVote(1));
+    elements.voteDownBtn.addEventListener('click', () => handleBulkVote(0));
 
     // Breeds section
     elements.searchBreedBtn.addEventListener('click', () => {
@@ -154,7 +159,7 @@ export function renderDogGallery(images, galleryElement, showActions = true) {
     currentImages = images;
     galleryElement.innerHTML = '';
 
-    if (images.length === 0) {
+    if (!images || images.length === 0) {
         galleryElement.innerHTML = '<p class="no-results">No dogs found.</p>';
         return;
     }
@@ -223,6 +228,11 @@ function createDogCard(image, showActions = true) {
 export function renderBreedsList(breeds) {
     elements.breedsList.innerHTML = '';
 
+    if (!breeds || breeds.length === 0) {
+        elements.breedsList.innerHTML = '<p class="no-results">No breeds found.</p>';
+        return;
+    }
+
     breeds.forEach(breed => {
         const breedItem = document.createElement('div');
         breedItem.className = 'breed-item';
@@ -230,6 +240,7 @@ export function renderBreedsList(breeds) {
 
         breedItem.innerHTML = `
             <div class="breed-name">${breed.name}</div>
+            <div class="breed-info">${breed.temperament || 'No temperament info'}</div>
         `;
 
         breedItem.addEventListener('click', () => {
@@ -278,27 +289,43 @@ async function handleFavorite(imageId, buttonElement) {
 async function handleVoteOnCard(imageId, value) {
     try {
         await voteOnImage(imageId, value);
-        // Could add visual feedback here
+        // Show temporary success message
+        showTemporaryMessage('Vote recorded!');
     } catch (error) {
         showError('Failed to vote: ' + error.message);
     }
 }
 
-// Handle voting on selected images
-async function handleVote(value) {
+// Handle bulk voting
+async function handleBulkVote(value) {
     if (currentImages.length === 0) {
         showError('No images to vote on. Load some dogs first!');
         return;
     }
 
     try {
-        // Vote on the first image (could be enhanced to vote on selected images)
+        // Vote on the first image (could be enhanced to vote on all visible images)
         await voteOnImage(currentImages[0].id, value);
-        showError('Vote recorded successfully!');
-        setTimeout(() => hideError(), 2000);
+        showTemporaryMessage('Vote recorded successfully!');
     } catch (error) {
         showError('Failed to vote: ' + error.message);
     }
+}
+
+// Show temporary message
+function showTemporaryMessage(message) {
+    const originalMessage = elements.errorMessage.textContent;
+    const wasHidden = elements.error.classList.contains('hidden');
+    
+    elements.errorMessage.textContent = message;
+    elements.error.classList.remove('hidden');
+    
+    setTimeout(() => {
+        if (wasHidden) {
+            elements.error.classList.add('hidden');
+        }
+        elements.errorMessage.textContent = originalMessage;
+    }, 2000);
 }
 
 // Handle modal favorite
@@ -318,8 +345,7 @@ async function handleModalVote(value) {
     if (imageId) {
         try {
             await voteOnImage(imageId, value);
-            showError('Vote recorded successfully!');
-            setTimeout(() => hideError(), 2000);
+            showTemporaryMessage('Vote recorded successfully!');
         } catch (error) {
             showError('Failed to vote: ' + error.message);
         }
@@ -334,7 +360,7 @@ function openModal(image) {
 
     const breed = image.breeds && image.breeds.length > 0 ? image.breeds[0] : null;
     elements.modalBreed.textContent = breed ? breed.name : 'Unknown Breed';
-    elements.modalDescription.textContent = breed ? breed.temperament || 'No description available' : 'No description available';
+    elements.modalDescription.textContent = breed ? (breed.temperament || 'No temperament information available') : 'No breed information available';
 
     const isFavorited = favoritesMap.has(image.id);
     elements.modalFavoriteBtn.textContent = isFavorited ? '❤️ Favorited' : '🤍 Favorite';
@@ -360,24 +386,28 @@ async function handleUpload(e) {
         return;
     }
 
-    // Import upload function here to avoid circular dependency
-    const { uploadImage } = await import('./api.js');
+    // Disable submit button during upload
+    elements.uploadSubmitBtn.disabled = true;
+    elements.uploadSubmitBtn.textContent = 'Uploading...';
 
     try {
-        showUploadStatus('Uploading...', '');
+        showUploadStatus('Uploading...', 'info');
         const result = await uploadImage(formData);
 
-        if (result.approved === 1) {
-            showUploadStatus('Upload successful! Your dog photo has been approved.', 'success');
+        if (result && result.id) {
+            showUploadStatus('Upload successful! Your dog photo has been submitted.', 'success');
+            // Clear form
+            e.target.reset();
         } else {
             showUploadStatus('Upload submitted! It may take a moment to be reviewed.', 'success');
         }
 
-        // Clear form
-        e.target.reset();
-
     } catch (error) {
         showUploadStatus('Upload failed: ' + error.message, 'error');
+    } finally {
+        // Re-enable submit button
+        elements.uploadSubmitBtn.disabled = false;
+        elements.uploadSubmitBtn.textContent = 'Upload Dog';
     }
 }
 
@@ -391,9 +421,13 @@ function showUploadStatus(message, type) {
 // Update favorites map
 export function updateFavoritesMap(favorites) {
     favoritesMap.clear();
-    favorites.forEach(fav => {
-        favoritesMap.set(fav.image.id, fav.id);
-    });
+    if (favorites && favorites.length > 0) {
+        favorites.forEach(fav => {
+            if (fav.image && fav.image.id) {
+                favoritesMap.set(fav.image.id, fav.id);
+            }
+        });
+    }
 }
 
 // Get current section

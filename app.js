@@ -4,7 +4,8 @@ import {
     fetchDogsByBreed,
     fetchBreeds,
     fetchFavorites,
-    searchBreeds
+    searchBreeds,
+    uploadImage 
 } from './api.js';
 
 import {
@@ -65,6 +66,7 @@ async function loadRandomDogs() {
         hideLoading();
     } catch (error) {
         showError('Failed to load dogs: ' + error.message);
+        hideLoading();
     }
 }
 
@@ -105,6 +107,7 @@ async function handleBreedSearch(event) {
         hideLoading();
     } catch (error) {
         showError('Failed to search breeds: ' + error.message);
+        hideLoading();
     }
 }
 
@@ -122,6 +125,7 @@ async function handleBreedSelection(event) {
         hideLoading();
     } catch (error) {
         showError('Failed to load breed images: ' + error.message);
+        hideLoading();
     }
 }
 
@@ -134,11 +138,12 @@ async function handleShowFavorites() {
         const images = favorites.map(fav => fav.image);
 
         const galleryElement = document.getElementById('favorites-gallery');
-        renderDogGallery(images, galleryElement, false); // Don't show actions in favorites
+        renderDogGallery(images, galleryElement, true); // Changed to true to show actions
 
         hideLoading();
     } catch (error) {
         showError('Failed to load favorites: ' + error.message);
+        hideLoading();
     }
 }
 
@@ -170,15 +175,14 @@ function handleRetry() {
     }
 }
 
-// Override the showSection function to handle navigation logic
-const originalShowSection = window.showSection;
-window.showSection = function(section) {
+// Fix the showSection override
+export function navigateToSection(section) {
     showSection(section);
     handleNavigation(section);
-};
+}
 
 // Start the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
 
 // Export for potential use in other modules
-export { init };
+export { init, navigateToSection };
