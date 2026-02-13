@@ -2,13 +2,9 @@
 import {
     fetchRandomDogs,
     fetchDogsByBreed,
-    fetchBreeds,
+    fetchAllBreeds,
     fetchFavorites,
-    addToFavorites,
-    removeFromFavorites,
-    voteOnImage,
-    searchBreeds,
-    uploadImage
+    searchBreeds
 } from './api.js';
 
 import {
@@ -22,10 +18,9 @@ import {
     renderBreedsList,
     showBreedGallery,
     updateFavoritesMap,
+    updateUIWithFavorites,
     getCurrentSection,
-    getCurrentBreedId,
-    setCurrentBreedId,
-    updateUIWithFavorites
+    setCurrentBreedId
 } from './ui.js';
 
 // Application state
@@ -34,7 +29,7 @@ let currentImages = [];
 
 // Initialize the application
 async function init() {
-    console.log('App initializing...'); // Debug log
+    console.log('App initializing...');
     
     // Initialize UI first
     initUI();
@@ -47,9 +42,9 @@ async function init() {
         await Promise.all([
             loadRandomDogs(),
             loadFavorites(),
-            loadBreeds()
+            loadAllBreeds() // Load all breeds on startup
         ]);
-        console.log('App initialized successfully'); // Debug log
+        console.log('App initialized successfully');
     } catch (error) {
         console.error('Failed to initialize app:', error);
         showError('Failed to initialize app: ' + error.message);
@@ -72,17 +67,23 @@ function setupNavigationListeners() {
             }
         });
     });
+
+    // Listen for custom events from UI
+    document.addEventListener('loadMoreDogs', () => loadRandomDogs());
+    document.addEventListener('searchBreeds', (e) => handleBreedSearch(e.detail.query));
+    document.addEventListener('selectBreed', (e) => handleBreedSelection(e.detail.breedId, e.detail.breedName));
+    document.addEventListener('retry', handleRetry);
 }
 
 // Load random dogs
 async function loadRandomDogs() {
     try {
-        console.log('Loading random dogs...'); // Debug log
+        console.log('Loading random dogs...');
         showLoading();
         hideError();
 
         const images = await fetchRandomDogs(12);
-        console.log('Random dogs loaded:', images); // Debug log
+        console.log('Random dogs loaded:', images.length);
         
         if (!images || images.length === 0) {
             throw new Error('No images returned from API');
@@ -107,9 +108,9 @@ async function loadRandomDogs() {
 // Load user's favorites
 async function loadFavorites() {
     try {
-        console.log('Loading favorites...'); // Debug log
+        console.log('Loading favorites...');
         const favorites = await fetchFavorites();
-        console.log('Favorites loaded:', favorites); // Debug log
+        console.log('Favorites loaded:', favorites.length);
         updateFavoritesMap(favorites);
         updateUIWithFavorites();
     } catch (error) {
@@ -117,57 +118,35 @@ async function loadFavorites() {
     }
 }
 
-// Load all breeds
-async function loadBreeds() {
+// Load ALL breeds and sort alphabetically
+async function loadAllBreeds() {
     try {
-        console.log('Loading breeds...'); // Debug log
-        allBreeds = await fetchBreeds();
-        console.log('Breeds loaded:', allBreeds.length); // Debug log
+        console.log('Loading all breeds...');
+        allBreeds = await fetchAllBreeds();
+        console.log('All breeds loaded:', allBreeds.length);
+        console.log('First 5 breeds:', allBreeds.slice(0, 5).map(b => b.name));
     } catch (error) {
         console.warn('Failed to load breeds:', error);
     }
 }
 
-// Handle show breeds
+// Handle show breeds - displays ALL breeds alphabetically
 function handleShowBreeds() {
-    console.log('Showing breeds...'); // Debug log
+    console.log('Showing all breeds...');
     if (allBreeds.length > 0) {
-        renderBreedsList(allBreeds.slice(0, 20));
+        // Pass the full sorted list of breeds
+        renderBreedsList(allBreeds);
+    } else {
+        // If breeds aren't loaded yet, try loading them
+        loadAllBreeds().then(() => {
+            renderBreedsList(allBreeds);
+        });
     }
 }
 
-// Handle show favorites
-async function handleShowFavorites() {
-    try {
-        console.log('Showing favorites...'); // Debug log
-        showLoading();
-
-        const favorites = await fetchFavorites();
-        console.log('Favorites for display:', favorites); // Debug log
-        
-        const images = favorites.map(fav => fav.image).filter(img => img); // Filter out any null images
-
-        const galleryElement = document.getElementById('favorites-gallery');
-        if (galleryElement) {
-            renderDogGallery(images, galleryElement, true); // Show actions in favorites
-        }
-
-        hideLoading();
-    } catch (error) {
-        console.error('Failed to load favorites:', error);
-        showError('Failed to load favorites: ' + error.message);
-        hideLoading();
-    }
-}
-
-// Handle breed search
+// Handle breed search - filters breeds based on search query
 async function handleBreedSearch(query) {
-    console.log('Searching breeds:', query); // Debug log
-
-    if (!query.trim()) {
-        renderBreedsList(allBreeds.slice(0, 20));
-        return;
-    }
+    console.log('Searching breeds for:', query);
 
     try {
         showLoading();
@@ -181,9 +160,9 @@ async function handleBreedSearch(query) {
     }
 }
 
-// Handle breed selection
+// Handle breed selection - shows images for the selected breed
 async function handleBreedSelection(breedId, breedName) {
-    console.log('Selecting breed:', breedId, breedName);
+    console.log('SELECTING BREED:', breedName, 'with ID:', breedId);
 
     try {
         showLoading();
@@ -191,7 +170,7 @@ async function handleBreedSelection(breedId, breedName) {
 
         // Fetch images for this specific breed
         const images = await fetchDogsByBreed(breedId, 12);
-        console.log('Breed images received:', images);
+        console.log(`Found ${images.length} images for ${breedName}`);
         
         if (images.length === 0) {
             showError(`No images found for ${breedName}. Try another breed.`);
@@ -199,16 +178,20 @@ async function handleBreedSelection(breedId, breedName) {
             return;
         }
         
-        // Get the breed data from the first image (should be the same for all)
+        // Get the complete breed data from the first image
         const breedData = images[0]?.breeds?.[0];
         
         if (!breedData) {
+            console.error('No breed data in images');
             showError('Breed information not available');
             hideLoading();
             return;
         }
         
-        // Show the breed gallery with the images AND breed description
+        console.log('Breed data for display:', breedData.name);
+        console.log('Breed temperament:', breedData.temperament);
+        
+        // Show the breed gallery with breed description and images
         showBreedGallery(images, breedData);
 
         hideLoading();
@@ -219,11 +202,57 @@ async function handleBreedSelection(breedId, breedName) {
     }
 }
 
+// Handle show favorites
+async function handleShowFavorites() {
+    try {
+        console.log('Showing favorites...');
+        showLoading();
+
+        const favorites = await fetchFavorites();
+        console.log('Favorites for display:', favorites.length);
+        
+        const images = favorites.map(fav => fav.image).filter(img => img);
+
+        const galleryElement = document.getElementById('favorites-gallery');
+        if (galleryElement) {
+            renderDogGallery(images, galleryElement, true);
+        }
+
+        hideLoading();
+    } catch (error) {
+        console.error('Failed to load favorites:', error);
+        showError('Failed to load favorites: ' + error.message);
+        hideLoading();
+    }
+}
+
+// Handle retry
+function handleRetry() {
+    const currentSection = getCurrentSection();
+    switch (currentSection) {
+        case 'random':
+            loadRandomDogs();
+            break;
+        case 'favorites':
+            handleShowFavorites();
+            break;
+        case 'breeds':
+            handleShowBreeds();
+            break;
+        default:
+            loadRandomDogs();
+    }
+}
+
 // Make functions available globally for event listeners
 window.loadRandomDogs = loadRandomDogs;
 window.handleBreedSearch = handleBreedSearch;
 window.handleBreedSelection = handleBreedSelection;
 window.handleShowFavorites = handleShowFavorites;
+window.handleRetry = handleRetry;
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);
+
+// Export for potential use in other modules
+export { init };
