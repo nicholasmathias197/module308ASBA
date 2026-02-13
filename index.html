@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Gallery - SBA 308A</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🐕 Dog Gallery</h1>
+        <p>Discover, favorite, and vote on adorable dogs!</p>
+    </header>
+
+    <nav>
+        <button id="random-btn" class="nav-btn active">Random Dogs</button>
+        <button id="breeds-btn" class="nav-btn">Browse Breeds</button>
+        <button id="favorites-btn" class="nav-btn">My Favorites</button>
+        <button id="upload-btn" class="nav-btn">Upload Dog</button>
+    </nav>
+
+    <main>
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="error" class="error hidden">
+            <p id="error-message"></p>
+            <button id="retry-btn">Retry</button>
+        </div>
+
+        <!-- Random Dogs Section -->
+        <section id="random-section" class="section">
+            <div class="controls">
+                <button id="load-more-btn" class="load-more-btn">Load More Dogs</button>
+                <div class="vote-controls">
+                    <button id="vote-up-btn" class="vote-btn">👍 Vote Up</button>
+                    <button id="vote-down-btn" class="vote-btn">👎 Vote Down</button>
+                </div>
+            </div>
+            <div id="random-gallery" class="gallery"></div>
+        </section>
+
+        <!-- Breeds Section -->
+        <section id="breeds-section" class="section hidden">
+            <div class="search-controls">
+                <input type="text" id="breed-search" placeholder="Search breeds..." class="search-input">
+                <button id="search-breed-btn" class="search-btn">Search</button>
+            </div>
+            <div id="breeds-list" class="breeds-list"></div>
+            <div id="breed-gallery" class="gallery hidden"></div>
+        </section>
+
+        <!-- Favorites Section -->
+        <section id="favorites-section" class="section hidden">
+            <h2>Your Favorite Dogs</h2>
+            <div id="favorites-gallery" class="gallery"></div>
+        </section>
+
+        <!-- Upload Section -->
+        <section id="upload-section" class="section hidden">
+            <div class="upload-container">
+                <h2>Upload Your Dog Photo</h2>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="dog-image">Choose a dog image:</label>
+                        <input type="file" id="dog-image" name="file" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sub-id">Your Name/ID (optional):</label>
+                        <input type="text" id="sub-id" name="sub_id" placeholder="Enter your name">
+                    </div>
+                    <button type="submit" id="upload-submit-btn" class="upload-btn">Upload Dog</button>
+                </form>
+                <div id="upload-status" class="upload-status hidden"></div>
+            </div>
+        </section>
+
+        <!-- Modal for full-size images -->
+        <div id="image-modal" class="modal hidden">
+            <div class="modal-content">
+                <span id="close-modal" class="close">&times;</span>
+                <img id="modal-image" src="" alt="Dog">
+                <div class="modal-info">
+                    <h3 id="modal-breed"></h3>
+                    <p id="modal-description"></p>
+                    <div class="modal-actions">
+                        <button id="modal-favorite-btn" class="favorite-btn">❤️ Favorite</button>
+                        <button id="modal-vote-up-btn" class="vote-btn">👍</button>
+                        <button id="modal-vote-down-btn" class="vote-btn">👎</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
