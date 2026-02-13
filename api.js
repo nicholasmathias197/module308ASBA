@@ -1,26 +1,21 @@
-// api.js
 const API_KEY = 'live_RnkhjTYAAxEOyE3Zo61n4bKiFNeiixpn19qJwrf2BO9mYTfKGGLl5ZnNJwSyeSA2';
 const BASE_URL = 'https://api.thedogapi.com/v1';
 
+// Helper function to handle API responses
 async function handleResponse(response) {
     if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`API Error: ${response.status} - ${error}`);
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
     return response.json();
 }
 
-function getHeaders() {
-    return {
-        'x-api-key': API_KEY,
-        'Content-Type': 'application/json'
-    };
-}
-
-export async function fetchRandomDogs(limit = 12) {
+// Fetch random dog images
+export async function fetchRandomDogs(limit = 10) {
     try {
-        const response = await fetch(${BASE_URL}/images/search?limit=&has_breeds=true, {
-            headers: getHeaders()
+        const response = await fetch(`${BASE_URL}/images/search?limit=${limit}`, {
+            headers: {
+                'x-api-key': API_KEY
+            }
         });
         return await handleResponse(response);
     } catch (error) {
@@ -29,26 +24,86 @@ export async function fetchRandomDogs(limit = 12) {
     }
 }
 
-export async function fetchFavorites() {
+// Search breeds
+export async function searchBreeds(query) {
     try {
-        const response = await fetch(${BASE_URL}/favourites, {
-            headers: getHeaders()
+        const response = await fetch(`${BASE_URL}/breeds/search?q=${encodeURIComponent(query)}`, {
+            headers: {
+                'x-api-key': API_KEY
+            }
         });
         return await handleResponse(response);
     } catch (error) {
-        console.error('Error fetching favorites:', error);
+        console.error('Error searching breeds:', error);
         throw error;
     }
 }
 
-export async function addToFavorites(imageId) {
+// Fetch images by breed
+export async function fetchImagesByBreed(breedId, limit = 10) {
     try {
-        const response = await fetch(${BASE_URL}/favourites, {
+        const response = await fetch(`${BASE_URL}/images/search?breed_ids=${breedId}&limit=${limit}`, {
+            headers: {
+                'x-api-key': API_KEY
+            }
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error fetching images by breed:', error);
+        throw error;
+    }
+}
+
+// Upload dog image
+export async function uploadDogImage(file, subId = '') {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (subId) {
+            formData.append('sub_id', subId);
+        }
+
+        const response = await fetch(`${BASE_URL}/images/upload`, {
             method: 'POST',
-            headers: getHeaders(),
+            headers: {
+                'x-api-key': API_KEY
+            },
+            body: formData
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error uploading dog image:', error);
+        throw error;
+    }
+}
+
+// Fetch user's uploaded images
+export async function fetchUserUploads(subId, limit = 10) {
+    try {
+        const response = await fetch(`${BASE_URL}/images?sub_id=${encodeURIComponent(subId)}&limit=${limit}`, {
+            headers: {
+                'x-api-key': API_KEY
+            }
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error fetching user uploads:', error);
+        throw error;
+    }
+}
+
+// Add to favorites
+export async function addToFavorites(imageId, subId = '') {
+    try {
+        const response = await fetch(`${BASE_URL}/favourites`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_KEY
+            },
             body: JSON.stringify({
                 image_id: imageId,
-                sub_id: 'dog-gallery-user'
+                sub_id: subId
             })
         });
         return await handleResponse(response);
@@ -58,28 +113,34 @@ export async function addToFavorites(imageId) {
     }
 }
 
-export async function removeFromFavorites(favoriteId) {
+// Fetch favorites
+export async function fetchFavorites(subId = '', limit = 10) {
     try {
-        const response = await fetch(${BASE_URL}/favourites/, {
-            method: 'DELETE',
-            headers: getHeaders()
+        const response = await fetch(`${BASE_URL}/favourites?sub_id=${encodeURIComponent(subId)}&limit=${limit}`, {
+            headers: {
+                'x-api-key': API_KEY
+            }
         });
         return await handleResponse(response);
     } catch (error) {
-        console.error('Error removing from favorites:', error);
+        console.error('Error fetching favorites:', error);
         throw error;
     }
 }
 
-export async function voteOnImage(imageId, value) {
+// Vote on image
+export async function voteOnImage(imageId, value, subId = '') {
     try {
-        const response = await fetch(${BASE_URL}/votes, {
+        const response = await fetch(`${BASE_URL}/votes`, {
             method: 'POST',
-            headers: getHeaders(),
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_KEY
+            },
             body: JSON.stringify({
                 image_id: imageId,
                 value: value,
-                sub_id: 'dog-gallery-user'
+                sub_id: subId
             })
         });
         return await handleResponse(response);
