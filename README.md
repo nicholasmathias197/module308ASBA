@@ -45,9 +45,20 @@ This application uses The Dog API (https://thedogapi.com/) with the following en
 
 ## Setup Instructions
 
+### Option 1: Simple (Recommended)
 1. Clone or download this repository
-2. Open `index.html` in a modern web browser
-3. The application will load automatically
+2. Open `index.html` directly in a modern web browser
+
+### Option 2: With npm (Development)
+1. Clone or download this repository
+2. Run `npm install` to install dependencies
+3. Run `npm start` to start the development server
+4. Open `http://localhost:3000` in your browser
+
+### Option 3: Python Server
+1. Make sure Python is installed
+2. Run `python -m http.server 8000` in the project directory
+3. Open `http://localhost:8000` in your browser
 
 ## Browser Support
 

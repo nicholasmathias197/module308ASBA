@@ -1,0 +1,26 @@
+{
+  "name": "module308asba",
+  "version": "1.0.0",
+  "description": "A single-page web application that allows users to browse, favorite, vote on, and upload dog images using The Dog API.",
+  "main": "api.js",
+  "scripts": {
+    "start": "http-server -p 3000",
+    "dev": "http-server -p 3000 -o",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasmathias197/module308ASBA.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nicholasmathias197/module308ASBA/issues"
+  },
+  "homepage": "https://github.com/nicholasmathias197/module308ASBA#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
